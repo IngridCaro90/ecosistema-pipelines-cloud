@@ -1,4 +1,4 @@
-name: Suma de dos números y evaluación
+name: Suma de dos números con variables de entorno del repositorio  # Nombre del workflow
 
 on:
   push:
@@ -6,16 +6,19 @@ on:
       - test/*   # Solo ramas que empiecen con test/
 
 jobs:
-  suma_job:
+  mostrar_variables_repositorio:  # Nombre del primer job
     runs-on: ubuntu-latest
-
     steps:
-      - name: Mostrar variables de entorno
+      - name: Mostrar variables de entorno  # Nombre del step
         run: |
-          echo "NUM1 = ${{ vars.NUM1 }}"
-          echo "NUM2 = ${{ vars.NUM2 }}"
+          echo "NUM1 = ${{ vars.NUM1 }}"  # Mostrar el valor de la variable NUM1 del repositorio
+          echo "NUM2 = ${{ vars.NUM2 }}"  # Mostrar el valor de la variable NUM2 del repositorio
 
-      - name: Sumar y evaluar resultado
+  sumar_y_evaluar:  # Nombre del segundo job
+    runs-on: ubuntu-latest
+    needs: mostrar_variables   # Espera a que termine el job mostrar_variables_repositorio
+    steps:
+      - name: Sumar y evaluar resultado # Nombre del step
         run: |
           suma=$(( ${{ vars.NUM1 }} + ${{ vars.NUM2 }} ))
           echo "La suma es: $suma"
@@ -25,3 +28,4 @@ jobs:
           else
             echo "El resultado es menor o igual a 10"
           fi
+          
