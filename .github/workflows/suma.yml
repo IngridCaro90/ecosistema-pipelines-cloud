@@ -14,11 +14,11 @@ jobs:
           echo "NUM1 = ${{ vars.NUM1 }}"  # Mostrar el valor de la variable NUM1 del repositorio
           echo "NUM2 = ${{ vars.NUM2 }}"  # Mostrar el valor de la variable NUM2 del repositorio
 
-  sumar_y_evaluar:  # Nombre del segundo job
+  sumar_y_comparar:  # Nombre del segundo job
     runs-on: ubuntu-latest
     needs: mostrar_variables_repositorio   # Espera a que termine el job mostrar_variables_repositorio
     steps:
-      - name: Sumar y evaluar resultado # Nombre del step
+      - name: Sumar y comparar resultado # Nombre del step
         run: |
           suma=$(( ${{ vars.NUM1 }} + ${{ vars.NUM2 }} ))
           echo "La suma es: $suma"
