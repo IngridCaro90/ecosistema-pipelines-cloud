@@ -1,6 +1,9 @@
-name: Suma de dos números
+name: Suma de dos números y evaluación
 
-on: [push]  # Ejecuta el workflow al hacer push a cualquier rama
+on:
+  push:
+    branches:
+      - test/*   # Solo ramas que empiecen con test/
 
 jobs:
   suma_job:
@@ -9,16 +12,14 @@ jobs:
     steps:
       - name: Mostrar variables de entorno
         run: |
-          echo "NUM1 = ${{ secrets.NUM1 }}"
-          echo "NUM2 = ${{ secrets.NUM2 }}"
+          echo "NUM1 = ${{ vars.NUM1 }}"
+          echo "NUM2 = ${{ vars.NUM2 }}"
 
       - name: Sumar y evaluar resultado
         run: |
-          # Sumar los números
-          suma=$(( ${{ secrets.NUM1 }} + ${{ secrets.NUM2 }} ))
+          suma=$(( ${{ vars.NUM1 }} + ${{ vars.NUM2 }} ))
           echo "La suma es: $suma"
 
-          # Condicional para evaluar la suma
           if [ $suma -gt 10 ]; then
             echo "El resultado es mayor a 10"
           else
