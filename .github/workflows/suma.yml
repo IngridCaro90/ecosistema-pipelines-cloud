@@ -60,7 +60,9 @@ jobs:
           IFS='-' read -r MIN_ADUL MAX_ADUL <<< "${{ vars.LIM_ADULTO }}"
 
           etapa="Desconocida"
-          if [ "$anios" -ge "$MIN_NINEZ" ] && [ "$anios" -le "$MAX_NINEZ" ]; then
+          if [ "$anios" -lt "$MIN_NINEZ" ]; then
+            etapa="Primera infancia"
+          elif [ "$anios" -ge "$MIN_NINEZ" ] && [ "$anios" -le "$MAX_NINEZ" ]; then
             etapa="Niñez"
           elif [ "$anios" -ge "$MIN_ADOL" ] && [ "$anios" -le "$MAX_ADOL" ]; then
             etapa="Adolescencia"
