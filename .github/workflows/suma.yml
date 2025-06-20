@@ -1,35 +1,69 @@
-name: Suma de dos números con variables de entorno del repositorio
+name: Edad y etapa de vida
 
-on:
-  push:
-    branches:
-      - test/*
+workflow_dispatch:
+  inputs:
+    dia:
+      description: "Día de nacimiento"
+      required: true
+      type: integer
+    mes:
+      description: "Mes de nacimiento"
+      required: true
+      type: integer
+    anio:
+      description: "Año de nacimiento"
+      required: true
+      type: integer
 
 jobs:
-  sumar:
-    name: Sumar
+  calcular_edad:
+    name: Calcular Edad
     runs-on: ubuntu-latest
     outputs:
-      suma: ${{ steps.calcular_suma.outputs.resultado }}
+      edad: ${{ steps.calc.outputs.edad }}
+      anios: ${{ steps.calc.outputs.anios }}
     steps:
-      - name: Calcular suma
-        id: calcular_suma
+      - name: Calcular edad en años, meses y días
+        id: calc
         run: |
-          suma=$(( ${{ vars.NUM1 }} + ${{ vars.NUM2 }} ))
-          echo "La suma es: $suma"
-          echo "resultado=$suma" >> $GITHUB_OUTPUT
+          hoy=$(date +%Y-%m-%d)
+          nacimiento="${{ inputs.anio }}-${{ inputs.mes }}-${{ inputs.dia }}"
+          # Usar date para calcular segundos entre fechas
+          segs_actual=$(date -d "$hoy" +%s)
+          segs_nacimiento=$(date -d "$nacimiento" +%s)
+          diff=$((segs_actual-segs_nacimiento))
 
-  validar:
-    name: Validar resultado
+          # Calcular edad
+          anios=$((diff/31556926)) # años
+          meses=$(( (diff%31556926)/2629743 )) # meses
+          dias=$(( (diff%2629743)/86400 )) # días
+          echo "La edad es ${anios} años, ${meses} meses, ${dias} días"
+          echo "edad=${anios} años, ${meses} meses, ${dias} días" >> $GITHUB_OUTPUT
+          echo "anios=$anios" >> $GITHUB_OUTPUT
+
+  clasificar_etapa:
+    name: Clasificar Etapa de Vida
     runs-on: ubuntu-latest
-    needs: sumar
+    needs: calcular_edad
     steps:
-      - name: Validar suma
+      - name: Determinar etapa basada en edad
         run: |
-          suma="${{ needs.sumar.outputs.suma }}"
-          echo "La suma recibida del job 'sumar' es: $suma"
-          if [ "$suma" -gt 10 ]; then
-            echo "✅ El resultado es mayor a 10"
-          else
-            echo "ℹ️ El resultado es menor o igual a 10"
+          anios=${{ needs.calcular_edad.outputs.anios }}
+          IFS='-' read -r MIN_NINEZ MAX_NINEZ <<< "${LIM_NINEZ}"
+          IFS='-' read -r MIN_ADOL MAX_ADOL <<< "${LIM_ADOLESCENCIA}"
+          IFS='-' read -r MIN_ADJOV MAX_ADJOV <<< "${LIM_ADULTO_JOVEN}"
+          IFS='-' read -r MIN_ADUL MAX_ADUL <<< "${LIM_ADULTO}"
+
+          etapa="Desconocida"
+          if [ "$anios" -ge "$MIN_NINEZ" ] && [ "$anios" -le "$MAX_NINEZ" ]; then
+            etapa="Niñez"
+          elif [ "$anios" -ge "$MIN_ADOL" ] && [ "$anios" -le "$MAX_ADOL" ]; then
+            etapa="Adolescencia"
+          elif [ "$anios" -ge "$MIN_ADJOV" ] && [ "$anios" -le "$MAX_ADJOV" ]; then
+            etapa="Adulto joven"
+          elif [ "$anios" -ge "$MIN_ADUL" ] && [ "$anios" -le "$MAX_ADUL" ]; then
+            etapa="Adultez"
+          elif [ "$anios" -gt "$MAX_ADUL" ]; then
+            etapa="Tercera edad"
           fi
+          echo "La persona tiene ${{ needs.calcular_edad.outputs.edad }} y está en la etapa: $etapa"
