@@ -1,4 +1,4 @@
-nname: Suma de dos números con variables de entorno del repositorio
+name: Suma de dos números con variables de entorno del repositorio
 
 on:
   push:
