@@ -67,9 +67,9 @@ jobs:
           elif [ "$anios" -ge "$MIN_ADOL" ] && [ "$anios" -le "$MAX_ADOL" ]; then
             etapa="Adolescencia"
           elif [ "$anios" -ge "$MIN_ADJOV" ] && [ "$anios" -le "$MAX_ADJOV" ]; then
-            etapa="Adulto joven"
+            etapa="Adultos jóvenes"
           elif [ "$anios" -ge "$MIN_ADUL" ] && [ "$anios" -le "$MAX_ADUL" ]; then
-            etapa="Adulto"
+            etapa="Adultos"
           elif [ "$anios" -gt "$MAX_ADUL" ]; then
             etapa="Tercera edad"
           fi
