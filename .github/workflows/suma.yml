@@ -1,31 +1,45 @@
-name: Suma de dos números con variables de entorno del repositorio  # Nombre del workflow
+name: Suma de dos números con variables de entorno del repositorio
 
 on:
   push:
     branches:
-      - test/*   # Solo ramas que empiecen con test/
+      - test/*
 
 jobs:
-  mostrar_variables_repositorio:  # Nombre del primer job
+  sumar:
+    name: Sumar
     runs-on: ubuntu-latest
+    outputs:
+      suma: ${{ steps.calcular_suma.outputs.resultado }}
     steps:
-      - name: Mostrar variables de entorno  # Nombre del step
-        run: |
-          echo "NUM1 = ${{ vars.NUM1 }}"  # Mostrar el valor de la variable NUM1 del repositorio
-          echo "NUM2 = ${{ vars.NUM2 }}"  # Mostrar el valor de la variable NUM2 del repositorio
-
-  sumar_y_comparar:  # Nombre del segundo job
-    runs-on: ubuntu-latest
-    needs: mostrar_variables_repositorio   # Espera a que termine el job mostrar_variables_repositorio
-    steps:
-      - name: Sumar y comparar resultado # Nombre del step
+      - name: Calcular suma
+        id: calcular_suma
         run: |
           suma=$(( ${{ vars.NUM1 }} + ${{ vars.NUM2 }} ))
           echo "La suma es: $suma"
+          echo "resultado=$suma" >> $GITHUB_OUTPUT
 
+  validar:
+    name: Validar resultado
+    runs-on: ubuntu-latest
+    needs: sumar
+    steps:
+      - name: Validar suma
+        run: |
+          suma="${{ needs.sumar.outputs.suma }}"
+          echo "La suma es: $suma"
           if [ $suma -gt 10 ]; then
             echo "El resultado es mayor a 10"
           else
             echo "El resultado es menor o igual a 10"
           fi
+
+  mostrar_variables_repositorio:
+    name: Mostrar variables
+    runs-on: ubuntu-latest
+    steps:
+      - name: Mostrar variables de entorno
+        run: |
+          echo "NUM1 = ${{ vars.NUM1 }}"
+          echo "NUM2 = ${{ vars.NUM2 }}"
           
