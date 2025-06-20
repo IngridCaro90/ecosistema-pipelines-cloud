@@ -20,12 +20,6 @@ on:
         required: true
         type: integer
 
-env:
-  LIM_NINEZ: ${{ vars.LIM_NINEZ }}
-  LIM_ADOLESCENCIA: ${{ vars.LIM_ADOLESCENCIA }}
-  LIM_ADULTO_JOVEN: ${{ vars.LIM_ADULTO_JOVEN }}
-  LIM_ADULTO: ${{ vars.LIM_ADULTO }}
-
 jobs:
   calcular_edad:
     name: Calcular Edad
@@ -60,19 +54,19 @@ jobs:
       - name: Determinar etapa basada en edad
         run: |
           anios=${{ needs.calcular_edad.outputs.anios }}
-          IFS='-' read -r MIN_NINEZ MAX_NINEZ <<< "${LIM_NINEZ}"
-          IFS='-' read -r MIN_ADOL MAX_ADOL <<< "${LIM_ADOLESCENCIA}"
-          IFS='-' read -r MIN_ADJOV MAX_ADJOV <<< "${LIM_ADULTO_JOVEN}"
-          IFS='-' read -r MIN_ADUL MAX_ADUL <<< "${LIM_ADULTO}"
+          IFS='-' read -r MIN_NINEZ MAX_NINEZ <<< "${{vars.LIM_NINEZ}}"
+          IFS='-' read -r MIN_ADOL MAX_ADOL <<< "${{vars.LIM_ADOLESCENCIA}}"
+          IFS='-' read -r MIN_ADJOV MAX_ADJOV <<< "${{vars.LIM_ADULTO_JOVEN}}"
+          IFS='-' read -r MIN_ADUL MAX_ADUL <<< "${{vars.LIM_ADULTO}}"
 
           etapa="Desconocida"
-          if [ "$anios" -ge "$MIN_NINEZ" ] && [ "$anios" -le "$MAX_NINEZ" ]; then
+          if [ "$anios" -ge "$MIN_NINEZ" ] && [ "$anios" -le "${{vars.LIM_NINEZ}}" ]; then
             etapa="Niñez"
-          elif [ "$anios" -ge "$MIN_ADOL" ] && [ "$anios" -le "$MAX_ADOL" ]; then
+          elif [ "$anios" -ge "$MIN_ADOL" ] && [ "$anios" -le "${{vars.LIM_ADOLESCENCIA}}" ]; then
             etapa="Adolescencia"
-          elif [ "$anios" -ge "$MIN_ADJOV" ] && [ "$anios" -le "$MAX_ADJOV" ]; then
+          elif [ "$anios" -ge "$MIN_ADJOV" ] && [ "$anios" -le "${{vars.LIM_ADULTO_JOVEN}}" ]; then
             etapa="Adulto joven"
-          elif [ "$anios" -ge "$MIN_ADUL" ] && [ "$anios" -le "$MAX_ADUL" ]; then
+          elif [ "$anios" -ge "$MIN_ADUL" ] && [ "$anios" -le "${{vars.LIM_ADULTO}}" ]; then
             etapa="Adultez"
           elif [ "$anios" -gt "$MAX_ADUL" ]; then
             etapa="Tercera edad"
