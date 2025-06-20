@@ -1,6 +1,10 @@
 name: Calcular Edad y Etapa de Vida
 
 on:
+  push:
+    branches:
+      - test/*
+
   workflow_dispatch:
     inputs:
       dia:
